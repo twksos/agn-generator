@@ -1,28 +1,25 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <AGN :score="4.0"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import AGN from './components/AGN.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    AGN
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+:root {
+    --main-color: #13bf13;
+    --border-color: #0c880c;
+    --trans-color: rgba(19, 191, 19, 0.85);
 }
 </style>
