@@ -52,7 +52,7 @@ function remark(score) {
   if(score > 3) return '极差';
   if(score > 2) return '痛苦体验';
   if(score > 1) return '无法忍受';
-  return '灾难';AGN
+  return '灾难';
 }
 
 function comment(score) {
@@ -74,6 +74,7 @@ export default {
   name: 'HelloWorld',
   props: {
     score: Number,
+    backgroundImage: String,
     comment: String,
   },
   computed: {
@@ -98,7 +99,7 @@ export default {
     font-family: sans-serif;
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-    overflow-y: scroll
+    overflow: visible;
 }
 
 a:active, a:hover {
@@ -130,23 +131,13 @@ svg:not(:root) {
     overflow: hidden
 }
 
-body {
-    background-color: #fff;
-    color: #333435;
-    font-size: 14px;
-    line-height: 1.643;
-    min-width: 1096px
-}
-
 .breakdown-box {
-    width: 800px;
+    width: 840px;
     float: left;
     background-size: cover;
-    background-position: left center;
+    background-position: top left;
     position: relative;
-    background-color: var(--main-color);
-    margin: 30px 0 60px 84px;
-    min-height: 200px
+    min-height: 320px
 }
 
 .breakdown-box .content-container {
@@ -156,7 +147,7 @@ body {
     color: #fff;
     box-sizing: border-box;
     border-left: 1px solid var(--border-color);
-    min-height: 200px
+    min-height: 320px
 }
 
 .breakdown-box .content-container .score-text {
@@ -210,7 +201,11 @@ body {
 }
 
 .breakdown-box .blurb-container {
-    padding: 1.5em 3.5em 1.2em
+    padding: 4.5em 3.5em 1.2em;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .breakdown-box .blurb-arrow {

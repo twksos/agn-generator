@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <AGN :score="4.0"/>
+    <AGN :score="6.8" background-image="/ac10036041.png"/>
   </div>
 </template>
 
@@ -21,5 +20,12 @@ export default {
     --main-color: #13bf13;
     --border-color: #0c880c;
     --trans-color: rgba(19, 191, 19, 0.85);
+}
+
+body {
+    background-color: #fff;
+    color: #333435;
+    font-size: 14px;
+    line-height: 1.643;
 }
 </style>
