@@ -1,29 +1,35 @@
-# agn-generator
+# AGN评分图生成器
 
-## Project setup
+## 开始使用
+
+### 读取AC文章
+1. 输入AC文章链接
+2. 点击“开始评分”按钮
+3. 请耐心等待抓取文章
+
+### 评论及保存图片
+1. 拖动评分滑动控件以改变分数
+2. （可选）输入自己的评论
+3. （可选）输入自己的评论员名称
+4. 点击“保存到下载目录”
+
+### 在爽文下方评论
+1. 打开AC文章
+2. 滑到评论区
+3. 将刚刚生成的图片拖上去，提交即可
+
+## 贡献代码
+
+### 1. 使用yarn安装依赖
 ```
-yarn install
+yarn
 ```
 
-### Compiles and hot-reloads for development
+### 2. 启动监听进程
 ```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
+yarn electron:serve
 ```
 
-### Run your tests
-```
-yarn run test
-```
+### 3. 开发
 
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 4. 提交 pull request
