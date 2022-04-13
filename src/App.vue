@@ -8,7 +8,7 @@
       :commentator="commentator"
     />
 
-    <div>
+    <div v-if="!isDownloading">
       <div v-if="!isCommentAvaiable">
 
         <div class="form-control">
@@ -95,7 +95,7 @@ export default {
       this.state = STATE_ENUM.downloading;
       disableScroll();
       window.scrollTo(0,0)
-      await new Promise(res=>setTimeout(res, 500));
+      await new Promise(res=>setTimeout(res,500));
       await window.electronAPI.generateAgnImage(this.showItem);
       enableScroll();
       this.state = STATE_ENUM.downloaded;
@@ -110,10 +110,13 @@ export default {
   },
   computed: {
     isLoading() {
-      return [STATE_ENUM.acfunLoading, STATE_ENUM.downloading].indexOf(this.state) !== -1;
+      return [STATE_ENUM.acfunLoading].indexOf(this.state) !== -1;
     },
     isCommentAvaiable() {
       return [STATE_ENUM.acfunLoaded, STATE_ENUM.downloading, STATE_ENUM.downloaded].indexOf(this.state) !== -1;
+    },
+    isDownloading() {
+      return this.state === STATE_ENUM.downloading
     }
   },
   data: () => {

@@ -22,43 +22,49 @@ async function createWindow() {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      devTools: isDevelopment,
     },
     resizable: false
   })
-  const winSc = new BrowserWindow({
+    // winSc.hide();
+  let winSc = null;
+  ipcMain.on('load-acfun', (event, url) => {
+    winSc = new BrowserWindow({
       width: 840,
       height: 376,
       webPreferences: {
         preload: path.join(__dirname, 'acfun-preload.js'),
         nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+        devTools: isDevelopment,
       },
       resizable: false
     })
-    winSc.hide();
-  ipcMain.on('load-acfun', (event, url) => {
     winSc.loadURL(url);
+    winSc.setEnabled(false);
     winSc.webContents.on('did-finish-load', ()=>{
       winSc.webContents.executeJavaScript('window.electronAPI.onLoadAcfun();');
     });
   });
   ipcMain.on('load-acfun-finish', async () => {
     try {
-      const nativeImage = await winSc.capturePage();
+      await new Promise(res=>setTimeout(res,500));
+      const nativeImage = await winSc.webContents.capturePage();
       const buffer = nativeImage.toPNG();
+      winSc.close();
       win.webContents.send('load-acfun-finish', buffer.toString('base64'));
     } catch (e) {
       win.webContents.send('load-acfun-fail', e.message);
     }
   });
   ipcMain.on('generate-agn-image', async () => {
+    await new Promise(res=>setTimeout(res,500));
     const nativeImage = await win.capturePage({x: 0, y:0, width: 840, height: 376});
     const buffer = nativeImage.toPNG();
     const downloadsPath = path.join(app.getPath('downloads'), `agn-${Date.now()}.png`);
     fs.createWriteStream(downloadsPath).write(buffer)
   });
-  win.on('closed', () => app.quit());
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
