@@ -54,7 +54,8 @@
           />
         </div>
         <div class="form-control">
-          <button class="button" v-on:click="savePng()">保存到下载目录</button>
+          <button class="button" v-on:click="savePng()">复制图像</button>
+          <button class="button" v-on:click="downPng()">保存图像</button>
           <button class="button" v-on:click="reset()">再评一篇</button>
         </div>
       </div>
@@ -86,9 +87,8 @@ export default {
     reset: function() {
       this.state = STATE_ENUM.init;
       this.score = 6;
-      this.commentator = "AGN测评员";
       this.comment = "";
-      this.url = "https://www.acfun.cn/a/ac34399056";
+      this.url = "https://www.acfun.cn/a/ac4976308";
       this.img = "data:image/jpeg;charset=utf-8;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
     },
     savePng: async function() {
@@ -96,10 +96,23 @@ export default {
       disableScroll();
       window.scrollTo(0,0)
       await new Promise(res=>setTimeout(res,500));
-      await window.electronAPI.generateAgnImage(this.showItem);
+      await window.electronAPI.copyAgnImage(this.showItem);
       enableScroll();
       this.state = STATE_ENUM.downloaded;
-      window.alert('保存成功');
+      window.alert('复制成功');
+    },
+    downPng: async function() {
+      this.state = STATE_ENUM.downloading;
+      disableScroll();
+      window.scrollTo(0,0)
+      try {
+        const filepath = await window.electronAPI.downAgnImage(this.showItem);
+        window.alert('保存成功：'+filepath);
+      } catch (e) {
+        window.alert('保存失败');
+      }
+      enableScroll();
+      this.state = STATE_ENUM.downloaded;
     },
     confirmUrl: async function (url) {
       this.state = STATE_ENUM.acfunLoading;
@@ -126,7 +139,7 @@ export default {
       showItem: false,
       commentator: "AGN测评员",
       comment: "",
-      url: "https://www.acfun.cn/a/ac34399056?from=video",
+      url: "https://www.acfun.cn/a/ac4976308",
       img: "data:image/jpeg;charset=utf-8;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
     };
   },

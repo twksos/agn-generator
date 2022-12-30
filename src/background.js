@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, clipboard, protocol, BrowserWindow, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path'
 import fs from 'fs'
@@ -11,6 +11,22 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+const acfunWindowCss = `
+* {
+  pointer-events: none !important;
+}
+body {
+  width: 840px !important;
+  overflow: hidden !important;
+}
+#main .wp {
+  width:800px !important;
+}
+#pagelet_header, #main>section>.clearfix.wp.area.head, #main .fr, #pagelet_toolbar {
+  display: none !important;
+}
+`;
 
 async function createWindow() {
   // Create the browser window.
@@ -46,24 +62,49 @@ async function createWindow() {
     winSc.webContents.on('did-finish-load', ()=>{
       winSc.webContents.executeJavaScript('window.electronAPI.onLoadAcfun();');
     });
+    winSc.webContents.insertCSS(acfunWindowCss);
   });
+  
+  win.webContents.send('multiev');
   ipcMain.on('load-acfun-finish', async () => {
     try {
-      await new Promise(res=>setTimeout(res,500));
+      await new Promise(res=>setTimeout(res,200));
       const nativeImage = await winSc.webContents.capturePage();
       const buffer = nativeImage.toPNG();
+      await new Promise(res=>setTimeout(res,200));
       winSc.close();
-      win.webContents.send('load-acfun-finish', buffer.toString('base64'));
+      win.webContents.send('load-acfun-callback', {success: true, data: buffer.toString('base64')});
     } catch (e) {
-      win.webContents.send('load-acfun-fail', e.message);
+      win.webContents.send('load-acfun-callback', {success: false, data: e.message});
     }
   });
-  ipcMain.on('generate-agn-image', async () => {
-    await new Promise(res=>setTimeout(res,500));
+
+  ipcMain.on('down-agn-image', async () => {
+    await new Promise(res=>setTimeout(res,200));
     const nativeImage = await win.capturePage({x: 0, y:0, width: 840, height: 376});
     const buffer = nativeImage.toPNG();
+    
     const downloadsPath = path.join(app.getPath('downloads'), `agn-${Date.now()}.png`);
-    fs.createWriteStream(downloadsPath).write(buffer)
+    const file = await dialog.showSaveDialog(win, {
+      title: "保存图片",
+      defaultPath : downloadsPath,
+      buttonLabel : "保存",
+      filters :[
+       {name: '图片', extensions: ['png']},
+       {name: '所有文件', extensions: ['*']}
+      ]
+     })
+
+     const filepath = file.filePath.toString();
+     fs.writeFile(filepath, buffer, 'binary', (err)=>{
+      win.webContents.send('down-agn-image-callback', {success: !err, data: filepath});
+     });
+  });
+
+  ipcMain.on('copy-agn-image', async () => {
+    await new Promise(res=>setTimeout(res,500));
+    const nativeImage = await win.capturePage({x: 0, y:0, width: 840, height: 376});
+    clipboard.writeImage(nativeImage);
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

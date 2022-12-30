@@ -8,26 +8,36 @@ function defer() {
     deferred.promise = promise;
     return deferred;
 }
-let loadAcfunDefer = null;
+
 const loadAcfun = (url) => {
-    loadAcfunDefer = defer();
+    const deferred = defer();
+    ipcRenderer.removeAllListeners('load-acfun-callback');
+    ipcRenderer.on('load-acfun-callback', (evt, payload) => {
+        if(!deferred) return null;
+        if(payload.success) deferred.resolve(payload.data);
+        else deferred.reject(new Error(payload.data));
+    });
     ipcRenderer.send('load-acfun', url);
-    return loadAcfunDefer.promise;
+    return deferred.promise;
 }
-const generateAgnImage = (showItem) => {
-    ipcRenderer.send('generate-agn-image', showItem);
+const copyAgnImage = (showItem) => {
+    ipcRenderer.send('copy-agn-image', showItem);
 }
-const loadAcfunFinish = (evt, base64Image) => {
-    if(!loadAcfunDefer) return null;
-    loadAcfunDefer.resolve(base64Image);
+const downAgnImage = (showItem) => {
+    const deferred = defer();
+    ipcRenderer.removeAllListeners('down-agn-image-callback');
+    ipcRenderer.on('down-agn-image-callback', (evt, payload) => {
+        if(!deferred) return null;
+        if(payload.success) deferred.resolve(payload.data);
+        else deferred.reject(new Error('保存失败'));
+    });
+    ipcRenderer.send('down-agn-image', showItem);
+    return deferred.promise;
 }
-const loadAcfunFail = (evt, message) => {
-    if(!loadAcfunDefer) return null;
-    loadAcfunDefer.reject(new Error(message));
-}
-ipcRenderer.on('load-acfun-finish', loadAcfunFinish);
-ipcRenderer.on('load-acfun-fail', loadAcfunFail);
+
 contextBridge.exposeInMainWorld('electronAPI', {
     loadAcfun,
-    generateAgnImage,
+    copyAgnImage,
+    downAgnImage,
 });
+ 

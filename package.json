@@ -1,6 +1,6 @@
 {
   "name": "agn-generator",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "author": {
     "name": "twksos",
     "email": "twksos@qq.com",
@@ -8,6 +8,7 @@
   },
   "license": "ISC",
   "scripts": {
+    "start": "yarn electron:serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
@@ -17,6 +18,7 @@
     "postuninstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "node-fetch": "^3.2.3",
     "vue": "^2.6.6"
   },
   "devDependencies": {
@@ -48,16 +50,6 @@
   "postcss": {
     "plugins": {
       "autoprefixer": {}
-    }
-  },
-  "vue": {
-    "pluginOptions": {
-      "electronBuilder": {
-        "preload": { 
-          "preload": "src/preload.js", 
-          "acfun-preload": "src/acfun-preload.js"
-        }
-      }
     }
   },
   "main": "background.js"
